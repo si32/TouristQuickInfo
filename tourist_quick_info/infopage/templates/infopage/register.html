@@ -1,4 +1,5 @@
 {% extends "infopage/layout.html" %}
+{% load static %}
 
 {% block body %}
 
@@ -23,14 +24,21 @@
             <input type="password" required name="confirm_password" placeholder="Confirm Password">
         </div>
         <div>
-            <input type="text" required name="country" placeholder="Country">
+            <select id="countries" required name="country" placeholder="Country">
+                <option value="" disabled selected hidden>Country</option>
+            </select>
         </div>
         <div>
-            <input type="text" required name="city" placeholder="City">
+            <input id="cities" required name="city" placeholder="City" type="search" list="cities_list" disabled>
+            <datalist id="cities_list"></datalist>
         </div>
-        <input type="submit" value="Register">
+        <input id="register_btn" type="submit" value="Register" disabled="true">
     </form>
 
     Already have an account? <a href="{% url 'login' %}">Log In here.</a>
 
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'infopage/country.js' %}"></script>
 {% endblock %}
