@@ -24,14 +24,26 @@
             <input type="password" required name="confirm_password" placeholder="Confirm Password">
         </div>
         <div>
-            <select id="countries" required name="country" placeholder="Country">
+            <select id="countries" required name="country_name" placeholder="Country">
                 <option value="" disabled selected hidden>Country</option>
             </select>
         </div>
         <div>
-            <input id="cities" required name="city" placeholder="City" type="search" list="cities_list" disabled>
+            <input id="cities" required name="city_name" placeholder="City" type="search" list="cities_list" disabled>
             <datalist id="cities_list"></datalist>
         </div>
+
+        <!-- Hidden forms -->
+        <input id="country_code" type="text" name="country_code" value="" hidden>
+        <input id="country_latitude" type="text" name="country_latitude" value="" hidden>
+        <input id="country_longitude" type="text" name="country_longitude" value="" hidden>
+        <input id="country_population" type="text" name="country_population" value="" hidden>
+
+        <input id="city_latitude" type="text" name="city_latitude" value="" hidden>
+        <input id="city_longitude" type="text" name="city_longitude" value="" hidden>
+        <input id="city_population" type="text" name="city_population" value="" hidden>
+        <input id="city_timezone" type="text" name="city_timezone" value="" hidden>
+
         <input id="register_btn" type="submit" value="Register" disabled="true">
     </form>
 
