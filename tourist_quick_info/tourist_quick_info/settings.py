@@ -123,3 +123,9 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# TOKENS (to keep them secret)
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv(".env"))

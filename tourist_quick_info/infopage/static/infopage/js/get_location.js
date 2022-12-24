@@ -1,3 +1,5 @@
+const OXILOR_API_KEY='-yY-uX_pqjH0feej_0050WXLxd_pcM'
+
 document.addEventListener("DOMContentLoaded", function() {
 
     get_countries();
@@ -9,11 +11,12 @@ document.addEventListener("DOMContentLoaded", function() {
         let cities_list = document.querySelector('#cities_list');
         cities_list.innerHTML = '';
 
+
         // put country in form
         let country = countries.value
         fetch(`https://data-api.oxilor.com/rest/search-regions?searchTerm=${country}&&type=country`, {
             headers: {
-                'Authorization': 'Bearer -yY-uX_pqjH0feej_0050WXLxd_pcM',
+                'Authorization': `Bearer ${OXILOR_API_KEY}`,
                 'Accept-Language': 'en'
             },
             method: 'GET'
@@ -42,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (search_text.length >= 2) {
             fetch(`https://data-api.oxilor.com/rest/search-regions?searchTerm=${search_text}&countryCode=${countrycode}&type=city`, {
                 headers: {
-                    'Authorization': 'Bearer -yY-uX_pqjH0feej_0050WXLxd_pcM',
+                    'Authorization': `Bearer ${OXILOR_API_KEY}`,
                     'Accept-Language': 'en'
                 },
                 method: 'GET'
@@ -64,8 +67,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         // Register if city in database
                         if (search_text === city.name) {
                             submit_btm.disabled = false;
-                            console.log(city.longitude);
-                            console.log(city.latitude);
                             document.querySelector('#city_timezone').value = city.timezone;
                             document.querySelector('#city_latitude').value = city.latitude;
                             document.querySelector('#city_longitude').value = city.longitude;
@@ -92,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
 function get_countries() {
     fetch('https://data-api.oxilor.com/rest/countries', {
         headers: {
-            'Authorization': 'Bearer -yY-uX_pqjH0feej_0050WXLxd_pcM',
+            'Authorization': `Bearer ${OXILOR_API_KEY}`,
             'Accept-Language': 'en'
         },
         method: 'GET'

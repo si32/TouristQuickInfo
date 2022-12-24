@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
@@ -87,8 +89,11 @@ def register(request):
         return render(request, "infopage/register.html")
 
 # Create your views here.
+
 def index(request):
     if request.user.is_authenticated:
         return render(request, "infopage/index.html")
     else:
+        OXILOR_API_KEY=os.getenv("OXILOR_API_KEY")
+        print(OXILOR_API_KEY)
         return render(request, "infopage/login.html")
