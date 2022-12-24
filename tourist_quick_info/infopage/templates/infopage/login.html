@@ -1,22 +1,28 @@
 {% extends "infopage/layout.html" %}
 
 {% block body %}
-    <h1>Login</h1>
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
 
-    <form action="{% url 'login' %}" method="post">
+		<div class="container">
+			<form action="{% url 'login' %}" method="post">
         {% csrf_token %}
-        <div>
-            <input type="text" required name="username" placeholder="Username" autofocus>
+        <div class="form-group mb-3 col-md-8 offset-md-2">
+						<label for="input-login">Login</label>
+            <input class="form-control mt-1" id="input-login" type="text" required name="username" placeholder="Username" autofocus>
         </div>
-        <div>
-            <input type="password" required name="password" placeholder="Password">
+        <div class="form-group mb-3 col-md-8 offset-md-2">
+						<label for="input-password">Password</label>
+            <input class="form-control mt-1" id="input-password" type="password" required name="password" placeholder="Password">
         </div>
-        <input type="submit" value="Login">
-    </form>
+				<div class="offset-md-2">
+					<input class="btn btn-primary" type="submit" value="Login">
+					<div>
+					</div>Don't have an account? <a href="{% url 'register' %}">Register here.</a>
+				</div>
+    	</form>
 
-    Don't have an account? <a href="{% url 'register' %}">Register here.</a>
+		</div>
 
 {% endblock %}

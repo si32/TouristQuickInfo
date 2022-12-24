@@ -86,7 +86,10 @@ def register(request):
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "infopage/register.html")
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "infopage/register.html")
 
 # Create your views here.
 
@@ -94,6 +97,57 @@ def index(request):
     if request.user.is_authenticated:
         return render(request, "infopage/index.html")
     else:
-        OXILOR_API_KEY=os.getenv("OXILOR_API_KEY")
-        print(OXILOR_API_KEY)
         return render(request, "infopage/login.html")
+
+
+def add_location(request):
+    """ Add new location for user in db """
+    if request.method == "POST":
+        country_name = request.POST["country_name"]
+        country_code = request.POST["country_code"]
+        country_latitude = float(request.POST["country_latitude"])
+        country_longitude = float(request.POST["country_longitude"])
+        country_population = request.POST["country_population"]
+
+        city_name = request.POST["city_name"]
+        city_latitude = request.POST["city_latitude"]
+        city_longitude = float(request.POST["city_longitude"])
+        city_population = float(request.POST["city_population"])
+        city_timezone = request.POST["city_timezone"]
+
+        user = request.user
+
+        try:
+            country = Country.objects.get(name=country_name)
+        except Country.DoesNotExist:
+            country = Country.objects.create(
+                name=country_name,
+                country_code=country_code,
+                latitude=country_latitude,
+                longitude=country_longitude,
+                population=country_population
+                )
+        try:
+            city = City.objects.get(name=city_name, country=country)
+        except City.DoesNotExist:
+            city = City.objects.create(
+                name=city_name,
+                latitude=city_latitude,
+                longitude=city_longitude,
+                population=city_population,
+                timezone=city_timezone,
+                country=country
+            )
+        try:
+            location = Location.objects.get(user=user, country=country, city=city)
+        except Location.DoesNotExist:
+            location = Location.objects.create(
+                user=user,
+                country=country,
+                city=city,
+                is_home=False
+            )
+
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return HttpResponseRedirect(reverse("index"))

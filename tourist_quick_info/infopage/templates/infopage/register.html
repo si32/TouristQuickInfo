@@ -3,33 +3,37 @@
 
 {% block body %}
 
-    <h1>Register</h1>
-
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
-
-    <form action="{% url 'register' %}" method="post">
+		<div class="container">
+			<form action="{% url 'register' %}" method="post">
         {% csrf_token %}
-        <div>
-            <input type="text" autofocus required name="username" placeholder="Username">
+        <div class="form-group mb-2 col-md-8 offset-md-2">
+						<label for="input-username">Username</label>
+            <input id="input-username" class="form-control" type="text" autofocus required name="username" placeholder="Username" aria-describedby="input-username-describe">
+						{% if message %}
+							<small id="input-username-describe" class="form-text">{{ message }}</small>
+						{% endif %}
         </div>
-        <div>
-            <input type="email" required name="email" placeholder="Email">
+        <div class="form-group mb-2 col-md-8 offset-md-2">
+						<label for="input-email">Email</label>
+            <input id="input-email" class="form-control" type="email" required name="email" placeholder="Email">
         </div>
-        <div>
-            <input type="password" required name="password" placeholder="Password">
+        <div class="form-group mb-2 col-md-8 offset-md-2">
+						<label for="input-password">Password</label>
+            <input id="input-password" class="form-control" type="password" required name="password" placeholder="Password">
         </div>
-        <div>
-            <input type="password" required name="confirm_password" placeholder="Confirm Password">
+        <div class="form-group mb-2 col-md-8 offset-md-2">
+						<label for="input-confpassword">Confirm password</label>
+            <input id="input-confpassword" class="form-control" type="password" required name="confirm_password" placeholder="Confirm Password">
         </div>
-        <div>
-            <select id="countries" required name="country_name" placeholder="Country">
+        <div class="form-group mb-2 col-md-8 offset-md-2">
+						<label for="contries">Country</label>
+            <select id="countries" class="form-control" required name="country_name" placeholder="Country">
                 <option value="" disabled selected hidden>Country</option>
             </select>
         </div>
-        <div>
-            <input id="cities" required name="city_name" placeholder="City" type="search" list="cities_list" disabled>
+        <div class="form-group mb-2 col-md-8 offset-md-2">
+						<label for="cities">City</label>
+            <input id="cities" class="form-control" required name="city_name" placeholder="City" type="search" list="cities_list" disabled>
             <datalist id="cities_list"></datalist>
         </div>
 
@@ -44,10 +48,15 @@
         <input id="city_population" type="text" name="city_population" value="" hidden>
         <input id="city_timezone" type="text" name="city_timezone" value="" hidden>
 
-        <input id="register_btn" type="submit" value="Register" disabled="true">
-    </form>
+				<div class="offset-md-2">
+					<input id="register_btn" type="submit" value="Register" disabled="true">
+					<div>
+						Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+					</div>
+				</div>
+    	</form>
+		</div>
 
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
 
 {% endblock %}
 
