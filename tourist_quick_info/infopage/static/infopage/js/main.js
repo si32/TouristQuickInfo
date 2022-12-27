@@ -7,16 +7,16 @@ document.addEventListener('DOMContentLoaded', function() {
     let locs_timezone = document.querySelectorAll('.location_city_timezone')
 
     // Find home location
-    let home_loc;
+    let home_loc = false;
     locs_timezone.forEach(loc_timezone => {
-        if (loc_timezone.dataset.home === "true") {
+        if (loc_timezone.dataset.home === true) {
             home_loc = loc_timezone;
         }
     })
 
     locs_timezone.forEach(loc_timezone => {
         let t = loc_timezone.dataset.timezone;
-        if (loc_timezone === home_loc) {
+        if ((loc_timezone === home_loc) || (home_loc === false)) {
             setInterval(function() {
                 myTimer(loc_timezone, t, offset=false);
             }, 1000);

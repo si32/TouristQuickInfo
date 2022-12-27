@@ -13,7 +13,7 @@
 						<div class="col">
 							{% if location.is_home %}
 								<div>🏡{{location.city.name}} ({{location.country.name}})</div>
-								<div class="location_city_timezone" data-timezone="{{location.city.timezone}}" data-home="true"></div>
+								<div class="location_city_timezone" data-timezone="{{location.city.timezone}}" data-home=True></div>
 								{% else %}
 								<div>{{location.city.name}} ({{location.country.name}})</div>
 								<div class="location_city_timezone" data-timezone="{{location.city.timezone}}"></div>

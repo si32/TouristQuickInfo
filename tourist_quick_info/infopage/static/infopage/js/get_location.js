@@ -8,10 +8,6 @@ document.addEventListener("DOMContentLoaded", function() {
     add_location_link.addEventListener('click', () => {
         console.log('start get contries');
 
-        // Erase privious request
-        // document.querySelector('#contries').innerHTML = '';
-        document.querySelector('#cities').innerHTML = '';
-
         get_countries();
 
         let countries = document.querySelector('#countries')
@@ -96,7 +92,32 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
 
+    });
+
+})
+
+
+// clear modal form
+document.addEventListener("hide.bs.modal", function() {
+
+    let options = document.querySelectorAll('option');
+    for (let option of options) {
+        option.remove();
+    }
+    // Create first option for good looking form
+    let option = document.createElement('option');
+    let country_options = document.querySelector('#countries');
+   // set option attributes
+    Object.assign(option, {
+        'value': "",
+        'disabled': true,
+        'selected': true,
+        'hidden': true
     })
+    option.innerHTML = 'Country';
+    country_options.appendChild(option);
+    // Clear city input
+    document.querySelector('#cities').value = '';
 
 })
 
