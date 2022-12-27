@@ -3,13 +3,30 @@
 
 
 {% block body %}
-    <h1>hello final project</h1>
+
 		<div class="CountryMainDiv">
-			<div>
-				{{ city_name }}
+
+			<div class="conteiner-fluid mx-4">
+				<h3>Time</h3>
+				<div class="row ">
+					{% for location in locations %}
+						<div class="col">
+							{% if location.is_home %}
+								<div>🏡{{location.city.name}} ({{location.country.name}})</div>
+								<div class="location_city_timezone" data-timezone="{{location.city.timezone}}" data-home="true"></div>
+								{% else %}
+								<div>{{location.city.name}} ({{location.country.name}})</div>
+								<div class="location_city_timezone" data-timezone="{{location.city.timezone}}"></div>
+							{% endif %}
+						</div>
+					{% endfor %}
 			</div>
-			<div>
-				{{ city_time }}
 			</div>
+
 		</div>
+{% endblock %}
+
+{% block script %}
+		<script src="{% static 'infopage/js/main.js' %}"></script>
+		<script src="{% static 'infopage/js/get_location.js' %}"></script>
 {% endblock %}

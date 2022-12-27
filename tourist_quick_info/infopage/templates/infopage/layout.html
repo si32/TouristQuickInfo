@@ -13,6 +13,7 @@
 		<link class="nav-item"nk rel="stylesheet" href="{% static 'infopage/style.css' %}">
 	</head>
 	<body>
+		<!-- Navigation menu -->
 		<nav class="navbar navbar-expand-md navbar-light bg-light">
 			<div class="container-fluid">
 				<div class="navbar-header">
@@ -27,7 +28,7 @@
 					{% if user.is_authenticated %}
 						<ul class="nav navbar-nav justify-content-between w-100">
 							<li class="nav-item col-auto">
-								<a class="nav-link" data-bs-toggle="modal" data-bs-target="#addLocation"> +Add location</a>
+								<a id="add_location_link" class="nav-link" data-bs-toggle="modal" data-bs-target="#addLocation">+Add location</a>
 							</li>
 
 							<div class="col-auto ">
@@ -89,7 +90,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-								<button type="submit" id="register_btn" class="btn btn-primary" disabled>Add location</button>
+								<button type="submit" id="add_location_btn" class="btn btn-primary" disabled>Add location</button>
 							</div>
 						</form>
 					</div>
@@ -102,7 +103,8 @@
 		{% endblock %}
 
 		{% block script %}
-			<script src="{% static 'infopage/js/get_location.js' %}"></script>
 		{% endblock %}
+
+
 	</body>
 </html>

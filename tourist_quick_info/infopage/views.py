@@ -37,18 +37,6 @@ def register(request):
         email = request.POST["email"]
         password = request.POST["password"]
 
-        country_name = request.POST["country_name"]
-        country_code = request.POST["country_code"]
-        country_latitude = float(request.POST["country_latitude"])
-        country_longitude = float(request.POST["country_longitude"])
-        country_population = request.POST["country_population"]
-
-        city_name = request.POST["city_name"]
-        city_latitude = request.POST["city_latitude"]
-        city_longitude = float(request.POST["city_longitude"])
-        city_population = float(request.POST["city_population"])
-        city_timezone = request.POST["city_timezone"]
-
         if password != request.POST["confirm_password"]:
             return render(request, "infopage/register.html", {
                 "message": "Passwords must match."
@@ -57,28 +45,6 @@ def register(request):
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
-            country = Country.objects.create(
-                name=country_name,
-                country_code=country_code,
-                latitude=country_latitude,
-                longitude=country_longitude,
-                population=country_population
-                )
-            city = City.objects.create(
-                name=city_name,
-                latitude=city_latitude,
-                longitude=city_longitude,
-                population=city_population,
-                timezone=city_timezone,
-                country=country
-            )
-            location = Location.objects.create(
-                user=user,
-                country=country,
-                city=city,
-                is_home=True
-            )
-
         except IntegrityError:
             return render(request, "infopage/register.html", {
                 "message": "Username already taken."
@@ -95,7 +61,12 @@ def register(request):
 
 def index(request):
     if request.user.is_authenticated:
-        return render(request, "infopage/index.html")
+        user = User.objects.get(username=request.user)
+        locations = user.user_locations.all()
+
+        return render(request, "infopage/index.html", {
+            "locations": locations
+        })
     else:
         return render(request, "infopage/login.html")
 

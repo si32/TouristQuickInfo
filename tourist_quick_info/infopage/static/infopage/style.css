@@ -13,3 +13,7 @@ a[data-bs-target="#addLocation"] {
 #input-username-describe {
     color: red;
 }
+
+.location_city_timezone {
+    color: blueviolet;
+}
