@@ -33,7 +33,7 @@
 
 							<div class="col-auto ">
 								<li class="nav-item" style="display: inline-block;">
-									<a href="#" class="nav-link">[{{ user.username }}]</a>
+									<a href="{% url 'profile' user.pk %}" class="nav-link">[{{ user.username }}]</a>
 								</li>
 								<li class="nav-item" style="display: inline-block;">
 									<a href="{% url 'logout' %}" class="nav-link">Logout</a>
@@ -78,9 +78,7 @@
 								</div>
 
 								<!-- home checkbox -->
-								<input type="checkbox" name="is_home">
-								<label for="is_home">Home</label>
-
+								<div id="home_checkbox_div"></div>
 
 								<!-- Hidden forms -->
 								<input id="country_code" type="text" name="country_code" value="" hidden>
@@ -110,6 +108,7 @@
 		{% block script %}
 		{% endblock %}
 
+		<script src="{% static 'infopage/js/get_location.js' %}"></script>
 
 	</body>
 </html>

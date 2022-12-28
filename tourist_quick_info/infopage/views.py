@@ -3,7 +3,7 @@ import os
 from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from .models import User, Country, City, Location
 
@@ -57,15 +57,15 @@ def register(request):
         else:
             return render(request, "infopage/register.html")
 
-# Create your views here.
 
+# Create your views here.
 def index(request):
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user)
         locations = user.user_locations.all()
 
         return render(request, "infopage/index.html", {
-            "locations": locations
+            "locations": locations,
         })
     else:
         return render(request, "infopage/login.html")
@@ -85,6 +85,11 @@ def add_location(request):
         city_longitude = float(request.POST["city_longitude"])
         city_population = float(request.POST["city_population"])
         city_timezone = request.POST["city_timezone"]
+
+        if "is_home" in request.POST:
+            location_is_home = True
+        else:
+            location_is_home = False
 
         user = request.user
 
@@ -116,9 +121,28 @@ def add_location(request):
                 user=user,
                 country=country,
                 city=city,
-                is_home=False
+                is_home=location_is_home
             )
 
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         return HttpResponseRedirect(reverse("index"))
+
+
+def is_home(request):
+    if request.user.is_authenticated:
+        user = User.objects.get(username=request.user)
+        locations = user.user_locations.all()
+
+        user_has_home_location = False
+        for location in locations:
+            if location.is_home:
+                user_has_home_location = True
+
+        return JsonResponse({"user_has_home_location": user_has_home_location})
+
+
+
+def profile(request, user_id):
+
+    return render(request, "infopage/profile.html")

@@ -6,8 +6,10 @@ document.addEventListener("DOMContentLoaded", function() {
     let add_location_link = document.querySelector('#add_location_link');
 
     add_location_link.addEventListener('click', () => {
-        console.log('start get contries');
+        console.log('start construct home check div');
+        input_home_checkbox();
 
+        console.log('start get contries');
         get_countries();
 
         let countries = document.querySelector('#countries')
@@ -93,7 +95,6 @@ document.addEventListener("DOMContentLoaded", function() {
         })
 
     });
-
 })
 
 
@@ -124,6 +125,7 @@ document.addEventListener("hide.bs.modal", function() {
 
 // Get list of all contries to select
 function get_countries() {
+
     fetch('https://data-api.oxilor.com/rest/countries', {
         headers: {
             'Authorization': `Bearer ${OXILOR_API_KEY}`,
@@ -148,5 +150,51 @@ function get_countries() {
 
 // utils functions
 function capitalizeFirstLetter(string) {
+
        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     }
+
+
+// Construct home checkbox div
+function input_home_checkbox() {
+
+    let home_checkbox_div = document.querySelector('#home_checkbox_div');
+    // let user_has_home_location;
+    fetch('/is_home')
+    .then(response => response.json())
+    .then(data => {
+        let user_has_home_location = data.user_has_home_location;
+        if (user_has_home_location) {
+            home_checkbox_div.innerHTML = `
+                <input id="is_home_checkbox" type="checkbox" name="is_home" disabled>
+                <label  for="is_home_checkbox" style="color: grey;">Home*</label>
+                <div class="explain-message">
+                    * You have already have home location. You can reset your home location after adding a new location in your ptofile.
+                </div>
+            `
+        } else {
+            home_checkbox_div.innerHTML = `
+                <input id="is_home_checkbox" type="checkbox" name="is_home" value=true>
+                <label  for="is_home_checkbox" style="color: grey;">Home*</label>
+                <div class="explain-message">
+                    * All calculaton will be based on your home location (difference in time, currency rate, etc.)
+                </div>
+            `
+        }
+         // style home checkbox
+        let is_home_checkbox = document.querySelector('#is_home_checkbox')
+        is_home_checkbox.addEventListener('change', () => {
+
+            if (is_home_checkbox.checked) {
+                is_home_checkbox.labels.forEach(el => {
+                    el.style.color = 'black';
+                })
+            } else {
+                is_home_checkbox.labels.forEach(el => {
+                    el.style.color = 'grey';
+                })
+            }
+        })
+    })
+
+}

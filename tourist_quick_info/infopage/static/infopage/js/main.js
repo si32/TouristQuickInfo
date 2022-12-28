@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Find home location
     let home_loc = false;
     locs_timezone.forEach(loc_timezone => {
-        if (loc_timezone.dataset.home === true) {
+        if (loc_timezone.dataset.home) {
             home_loc = loc_timezone;
         }
     })

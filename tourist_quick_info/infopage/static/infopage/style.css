@@ -17,3 +17,8 @@ a[data-bs-target="#addLocation"] {
 .location_city_timezone {
     color: blueviolet;
 }
+
+.explain-message {
+    font-size: small;
+    color: grey;
+}
