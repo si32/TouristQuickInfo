@@ -148,17 +148,21 @@ def is_home(request):
         user = User.objects.get(username=request.user)
         locations = user.user_locations.all()
 
-        user_has_home_location = False
         for location in locations:
             if location.is_home:
                 user_has_home_location = True
+                user_home_location_city = location.city.name
                 user_home_location_timezone = location.city.timezone
 
-        return JsonResponse({
-            "user_has_home_location": user_has_home_location,
-            "user_home_location_timezone": user_home_location_timezone
-            })
+                return JsonResponse({
+                "user_has_home_location": user_has_home_location,
+                "user_home_location_timezone": user_home_location_timezone,
+                "user_home_location_city": user_home_location_city
+                })
 
+        return JsonResponse({
+            "user_has_home_location": False
+        })
 
 @login_required
 def profile(request, user_id):

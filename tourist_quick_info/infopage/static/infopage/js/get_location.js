@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function() {
     let add_location_link = document.querySelector('#add_location_link');
 
     add_location_link.addEventListener('click', () => {
-        console.log('start construct home check div');
         input_home_checkbox();
 
         console.log('start get contries');

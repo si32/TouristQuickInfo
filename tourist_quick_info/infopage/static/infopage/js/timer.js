@@ -9,37 +9,29 @@ document.addEventListener('DOMContentLoaded', function() {
     let locs_timezone = document.querySelectorAll('.location_city_timezone')
 
     // Find home location
-    let home_loc = false;
-    // locs_timezone.forEach(loc_timezone => {
-    //     if (loc_timezone.dataset.home) {
-    //         home_loc = loc_timezone;
-    //     }
-    // })
-
+    let home_location_timezone = false;
     fetch('/is_home')
     .then(response => response.json())
     .then(data => {
         let user_has_home_location = data.user_has_home_location;
-        let user_home_location_timezone = data.user_home_location_timezone;
         if (user_has_home_location) {
-            home_loc = user_home_location_timezone;
-            console.log(home_loc);
+            home_location_timezone = data.user_home_location_timezone;
         }
-    })
 
-    locs_timezone.forEach(loc_timezone => {
-        let t = loc_timezone.dataset.timezone;
-        if ((loc_timezone === home_loc) || (home_loc === false)) {
-            setInterval(function() {
-                myTimer(loc_timezone, t, offset=false);
-            }, 1000);
-        } else {
-            let offset = getOffset(loc_timezone, home_loc);
-            setInterval(function() {
-                myTimer(loc_timezone, t, offset);
-            }, 1000);
-        }
-    });
+        locs_timezone.forEach(loc => {
+            let loc_timezone = loc.dataset.timezone;
+            if ((loc.dataset.home) || (home_location_timezone === false)) {
+                setInterval(function() {
+                    myTimer(loc, loc_timezone, offset=false);
+                }, 1000);
+            } else {
+                let offset = getOffset(loc_timezone, home_location_timezone);
+                setInterval(function() {
+                    myTimer(loc, loc_timezone, offset);
+                }, 1000);
+            }
+        });
+    })
 
 })
 
@@ -63,13 +55,13 @@ function myTimer(obj, t, offset) {
 
 
 // Differents between cities in hours
-function getOffset(loc, home) {
+function getOffset(loc_timezone, home_timezone) {
     let d1 = new Date();
     let d2 = new Date();
-    let home_time = new Date(d1.toLocaleString("sv-SE", {timeZone: home.dataset.timezone}));
-    let loc_time = new Date(d2.toLocaleString("sv-SE", {timeZone: loc.dataset.timezone}));
+    let home_time = new Date(d1.toLocaleString("sv-SE", {timeZone: home_timezone}));
+    let loc_time = new Date(d2.toLocaleString("sv-SE", {timeZone: loc_timezone}));
 
-    let offset = (loc_time.getTime() -home_time.getTime());
+    let offset = (loc_time.getTime() - home_time.getTime());
 
     offset = offset / MILLISECONDS / SECONDS;
     return offset;
