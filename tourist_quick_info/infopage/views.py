@@ -1,11 +1,14 @@
 import os
+import json
 
 from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from .models import User, Country, City, Location
+from django.views.decorators.csrf import csrf_exempt
 
 # Login/Logout/Register
 def login_view(request):
@@ -62,7 +65,7 @@ def register(request):
 def index(request):
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user)
-        locations = user.user_locations.all()
+        locations = user.user_locations.all().filter(show_hide=True).order_by("order")
 
         return render(request, "infopage/index.html", {
             "locations": locations,
@@ -70,7 +73,7 @@ def index(request):
     else:
         return render(request, "infopage/login.html")
 
-
+@login_required
 def add_location(request):
     """ Add new location for user in db """
     if request.method == "POST":
@@ -117,18 +120,29 @@ def add_location(request):
         try:
             location = Location.objects.get(user=user, country=country, city=city)
         except Location.DoesNotExist:
+            # try:
+            user = User.objects.get(username=request.user)
+            user_locations = user.user_locations.all().order_by("-order")
+            if user_locations:
+                order = int(user_locations[0].order) + 1
+            else:
+                order = 1
+
+
             location = Location.objects.create(
                 user=user,
+                order=order,
                 country=country,
                 city=city,
-                is_home=location_is_home
+                is_home=location_is_home,
+                show_hide=True
             )
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         return HttpResponseRedirect(reverse("index"))
 
-
+@login_required
 def is_home(request):
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user)
@@ -138,11 +152,60 @@ def is_home(request):
         for location in locations:
             if location.is_home:
                 user_has_home_location = True
+                user_home_location_timezone = location.city.timezone
 
-        return JsonResponse({"user_has_home_location": user_has_home_location})
+        return JsonResponse({
+            "user_has_home_location": user_has_home_location,
+            "user_home_location_timezone": user_home_location_timezone
+            })
 
 
-
+@login_required
 def profile(request, user_id):
+    user = User.objects.get(username=request.user)
+    locations = user.user_locations.all().order_by("order")
 
-    return render(request, "infopage/profile.html")
+    return render(request, "infopage/profile.html", {
+        "locations": locations
+    })
+
+@csrf_exempt
+@login_required
+def update_locations(request):
+    user = request.user
+
+    if request.method == "PUT":
+        locations = json.loads(request.body).get("locations")
+        for location in locations:
+            order = location["order"]
+            city_name, country_name = location["location"].strip(")").split("(")
+            country =  Country.objects.get(name=country_name)
+            city =  City.objects.get(name=city_name)
+            is_home = location.get("is_home")
+            show_hide = location["show_hide"]
+
+            try:
+                Location.objects.get(user=user, order=order, country=country, city=city, is_home=is_home, show_hide=show_hide)
+            except Location.DoesNotExist:
+                print("start update")
+                loc = Location.objects.get(user=user, country=country, city=city)
+                loc.order = order
+                loc.is_home = is_home
+                loc.show_hide = show_hide
+                loc.save()
+
+        return HttpResponse(status=204)
+
+    elif request.method == "DELETE":
+        location = json.loads(request.body)
+        print(location)
+        city_name, country_name = location["location"].strip(")").split("(")
+        country =  Country.objects.get(name=country_name)
+        city =  City.objects.get(name=city_name)
+
+        loc_for_del = Location.objects.get(user=user, country=country, city=city)
+        loc_for_del.delete()
+
+        return HttpResponse(status=204)
+    else:
+        return HttpResponseRedirect(reverse("index"))

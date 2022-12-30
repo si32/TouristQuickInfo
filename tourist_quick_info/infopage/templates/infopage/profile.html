@@ -3,10 +3,55 @@
 
 {% block body %}
 
-<h1>Profile: {{ user.username }}</h1>
+  <h1>Profile: {{ user.username }}</h1>
+
+  <table class="table table-hover table-responsive" >
+    <thead>
+      <tr>
+        <th>Order</th>
+        <th>Location</th>
+        <th>
+          <input type="radio" name="is_home_radio" id="not_yet_radio">
+          <label for="not_yet_radio">Home location</label>
+        </th>
+        <th>Show/Hide</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="profile">
+      {% for location in locations %}
+        <tr>
+          <td >
+            <button class="order_btn" id="order_up_btn_{{location.id}}" data-order="{{location.order}}" data-direction="up">🔼</button>
+            <button class="order_btn" id="order_down_btn_{{location.id}}" data-order="{{location.order}}" data-direction="down">🔽</button>
+            <b>{{ location.order }}</b>
+          </td>
+          <td>{{ location.city.name }}({{ location.country.name }})</td>
+          {% if location.is_home %}
+            <td>
+              <input type="radio" name="is_home_radio" checked>
+            </td>
+            {% else %}
+            <td>
+              <input type="radio" name="is_home_radio">
+            </td>
+          {% endif %}
+            <td>
+              {% if location.show_hide  %}
+                <input id="sh_checkbox_{{location.order}}" type="checkbox" checked>
+              {% else %}
+                <input id="sh_checkbox_{{location.order}}" type="checkbox">
+              {% endif %}
+            </td>
+          <td><button class="del_btn btn btn-secondary">Delete</button></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
 
 {% endblock %}
 
 {% block script %}
+  <script src="{% static 'infopage/js/profile.js' %}"></script>
 {% endblock %}

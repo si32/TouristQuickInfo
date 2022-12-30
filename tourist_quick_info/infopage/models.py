@@ -31,9 +31,11 @@ class City(models.Model):
 
 class Location(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_locations")
+    order = models.PositiveIntegerField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     is_home = models.BooleanField()
+    show_hide = models.BooleanField()
 
     def __str__(self):
-        return f"{self.id}: {self.user.username} {self.country.name} {self.city.name} {self.is_home}"
+        return f"{self.id}: {self.user.username} {self.country.name} {self.city.name} {self.is_home} {self.show_hide} {self.order}"

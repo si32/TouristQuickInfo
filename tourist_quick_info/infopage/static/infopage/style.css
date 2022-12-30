@@ -22,3 +22,9 @@ a[data-bs-target="#addLocation"] {
     font-size: small;
     color: grey;
 }
+
+.order_btn {
+    border: none;
+    background-color: white;
+    padding: 0;
+}

@@ -1,4 +1,6 @@
+// in 1 second
 const MILLISECONDS = 1000;
+// in 1 hour
 const SECONDS = 3600;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -8,9 +10,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Find home location
     let home_loc = false;
-    locs_timezone.forEach(loc_timezone => {
-        if (loc_timezone.dataset.home) {
-            home_loc = loc_timezone;
+    // locs_timezone.forEach(loc_timezone => {
+    //     if (loc_timezone.dataset.home) {
+    //         home_loc = loc_timezone;
+    //     }
+    // })
+
+    fetch('/is_home')
+    .then(response => response.json())
+    .then(data => {
+        let user_has_home_location = data.user_has_home_location;
+        let user_home_location_timezone = data.user_home_location_timezone;
+        if (user_has_home_location) {
+            home_loc = user_home_location_timezone;
+            console.log(home_loc);
         }
     })
 
