@@ -2,6 +2,9 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    //csrf token
+    let csrftoken = getCookie('csrftoken');
+
     // fire change event to update db
     let ev = new Event('change');
 
@@ -36,24 +39,23 @@ document.addEventListener('DOMContentLoaded', function() {
     let del_btns = document.querySelectorAll('.del_btn');
     del_btns.forEach(del_btn => {
         del_btn.addEventListener('click', () => {
-            console.log('click');
             let row = del_btn.parentElement.parentElement;
 
             let location = row.children[1].innerText;
 
             // Delete from db
-            console.log('start fetch del' + location);
             fetch('/update_locations', {
                 method: 'DELETE',
+                headers: {'X-CSRFToken': csrftoken},
+                mode: 'same-origin',
                 body: JSON.stringify({
                     location: location
                 })
             })
             .then(() => {
-
-                console.log("ok");
                 row.remove();
                 document.querySelector('table').dispatchEvent(ev);
+                console.log('delete ok');
             })
 
         })
@@ -76,16 +78,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             locations.push(location);
         }
-
         // Передать объект
         fetch('/update_locations', {
             method: 'PUT',
+            headers: {'X-CSRFToken': csrftoken},
+            mode: 'same-origin',
             body: JSON.stringify({
               locations: locations
             })
           })
           .then(() => {
-            console.log('ok');
+            console.log('update db ok');
           })
 
     })

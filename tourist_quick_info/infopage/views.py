@@ -1,5 +1,6 @@
 import os
 import json
+import requests
 
 from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate
@@ -9,6 +10,10 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from .models import User, Country, City, Location
 from django.views.decorators.csrf import csrf_exempt
+
+
+WEATHER_KEY = "2c02ccccf2e64fab8ad82744230401"
+
 
 # Login/Logout/Register
 def login_view(request):
@@ -173,7 +178,6 @@ def profile(request, user_id):
         "locations": locations
     })
 
-@csrf_exempt
 @login_required
 def update_locations(request):
     user = request.user
@@ -211,5 +215,23 @@ def update_locations(request):
         loc_for_del.delete()
 
         return HttpResponse(status=204)
+    else:
+        return HttpResponseRedirect(reverse("index"))
+
+
+# weather
+@login_required
+def weather(request):
+    if request.method == "POST":
+        location = json.loads(request.body)
+        params = {
+            "key": WEATHER_KEY,
+            "q": f'{location.get("city")}&q={location.get("country")}',
+            "days": 5
+        }
+        r = requests.get("http://api.weatherapi.com/v1/forecast.json", params=params)
+        print(r.url)
+        data = r.text
+        return HttpResponse(data)
     else:
         return HttpResponseRedirect(reverse("index"))

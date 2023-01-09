@@ -28,3 +28,19 @@ a[data-bs-target="#addLocation"] {
     background-color: white;
     padding: 0;
 }
+
+.temp {
+    display: inline-block;
+    vertical-align: middle;
+}
+.condition {
+    display: inline-block;
+}
+
+.forecastday {
+    display: inline-block;
+    margin-right: 8px;
+
+    font-size: small;
+    text-align: center;
+}
