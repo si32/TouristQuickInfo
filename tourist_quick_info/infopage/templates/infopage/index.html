@@ -20,8 +20,11 @@
 								<div class="location_city_timezone" data-timezone="{{location.city.timezone}}"></div>
 							{% endif %}
 							<!-- Weather -->
-							<div class="current-weather" data-city="{{ location.city.name }}" data-country="{{ location.country.name }}"></div>
-
+							<div class="weather">
+								<div class="current-weather" data-city="{{ location.city.name }}" data-country="{{ location.country.name }}"></div>
+								<button class="refresh-weather" onclick="refresh_weather(event)">Refresh</button>
+							</div>
+							<!-- Currency -->
 
 
 
