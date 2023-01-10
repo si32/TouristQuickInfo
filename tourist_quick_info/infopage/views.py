@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import environ
 
 from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate
@@ -12,8 +13,9 @@ from .models import User, Country, City, Location
 from django.views.decorators.csrf import csrf_exempt
 
 
-WEATHER_KEY = "2c02ccccf2e64fab8ad82744230401"
-
+# Tokens in .env file
+env = environ.Env()
+environ.Env().read_env()
 
 # Login/Logout/Register
 def login_view(request):
@@ -225,7 +227,7 @@ def weather(request):
     if request.method == "POST":
         location = json.loads(request.body)
         params = {
-            "key": WEATHER_KEY,
+            "key": env("WEATHER_KEY"),
             "q": f'{location.get("city")}&q={location.get("country")}',
             "days": 5
         }

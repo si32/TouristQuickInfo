@@ -44,3 +44,7 @@ a[data-bs-target="#addLocation"] {
     font-size: small;
     text-align: center;
 }
+
+.current-weather {
+    margin-top: 8px;
+}

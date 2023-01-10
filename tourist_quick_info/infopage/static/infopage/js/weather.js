@@ -44,8 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
             forecastdays.forEach(forecastday => {
                 let fday = document.createElement('div');
                 fday.setAttribute('class', 'forecastday');
+                let date = new Date(forecastday.date);
                 fday.innerHTML = `
-                    <div>${forecastday.date}</div>
+                    <div>${date.toLocaleDateString('en-EN', {weekday:'short'})} ${date.toLocaleDateString('sv-SE', {month:'numeric', day:'numeric'})}</div>
                     <div>
                     <img src=${forecastday.day.condition.icon} title=${forecastday.day.condition.text}>
                     </div>
