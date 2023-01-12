@@ -12,5 +12,8 @@ urlpatterns = [
     path("profile/<int:user_id>", views.profile, name="profile"),
     path("is_home", views.is_home, name="is_home"),
     path("update_locations", views.update_locations, name="update_locations"),
-    path("weather", views.weather, name="weather")
+    path("weather", views.weather, name="weather"),
+    path("currency", views.currency, name="currency"),
+    # adding currency code - country in db
+    # path("create_currency_db", views.create_currency_db),
 ]

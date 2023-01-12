@@ -22,9 +22,13 @@
 							<!-- Weather -->
 							<div class="weather">
 								<div class="current-weather" data-city="{{ location.city.name }}" data-country="{{ location.country.name }}"></div>
-								<button class="refresh-weather" onclick="refresh_weather(event)">Refresh</button>
+								<button class="refresh-btn" onclick="refresh_weather(event)">Refresh</button>
 							</div>
 							<!-- Currency -->
+							<div class="currency">
+								<div class="current-currency" data-country="{{ location.country.name }}"></div>
+								<button class="refresh-btn" onclick="refresh_currency(event)">Refresh</button>
+							</div>
 
 
 
@@ -44,5 +48,6 @@
 		<script src="{% static 'infopage/js/index.js' %}"></script>
 		<script src="{% static 'infopage/js/timer.js' %}"></script>
 		<script src="{% static 'infopage/js/weather.js' %}"></script>
+		<script src="{% static 'infopage/js/currency.js' %}"></script>
 
 {% endblock %}

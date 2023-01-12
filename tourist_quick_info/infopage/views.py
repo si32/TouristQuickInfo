@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import environ
+import csv
 
 from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate
@@ -9,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from .models import User, Country, City, Location
+from .models import User, Country, City, Location, CurrencyCode
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -160,11 +161,13 @@ def is_home(request):
                 user_has_home_location = True
                 user_home_location_city = location.city.name
                 user_home_location_timezone = location.city.timezone
+                user_home_location_country = location.country.name
 
                 return JsonResponse({
                 "user_has_home_location": user_has_home_location,
                 "user_home_location_timezone": user_home_location_timezone,
-                "user_home_location_city": user_home_location_city
+                "user_home_location_city": user_home_location_city,
+                "user_home_location_country": user_home_location_country
                 })
 
         return JsonResponse({
@@ -232,8 +235,84 @@ def weather(request):
             "days": 5
         }
         r = requests.get("http://api.weatherapi.com/v1/forecast.json", params=params)
-        print(r.url)
         data = r.text
         return HttpResponse(data)
     else:
         return HttpResponseRedirect(reverse("index"))
+
+
+# create currency db => done!
+# def create_currency_db(request):
+#     with open("C:/Python/CS50W/TouristQuickInfo/tourist_quick_info/infopage/currency_country.csv") as f:
+#         reader = csv.reader(f)
+#         headers = next(reader)
+#         print(headers)
+#         for row in reader:
+#             code, currency, location = row[0].split(";")
+#             CurrencyCode.objects.create(code=code, currency=currency, location=location)
+
+#     return HttpResponse('ok')
+
+
+# currency
+@login_required
+def currency(request):
+    if request.method == "POST":
+        country = json.loads(request.body).get("country")
+
+        currency_and_code = get_currency_code(country)
+        code = currency_and_code.get("code")
+        national_currency = currency_and_code.get("currency")
+
+        # is home location exist for this user?
+        r = is_home(request)
+        d = json.loads(r.content)
+        ishome = d.get("user_has_home_location")
+
+        if ishome:
+            home_country = d.get("user_home_location_country")
+            code_home = get_currency_code(home_country).get("code")
+            # Nothing to convert, everthing in USD
+            if (code_home == code == "USD"):
+                return JsonResponse({})
+        else:
+            code_home = False
+
+        # api
+        req = requests.get("https://api.apilayer.com/exchangerates_data/latest", {
+            "apikey": env("EXCHANGE_RATE_KEY"),
+            "base": "USD",
+            "symbols": f"{code},{code_home}"
+        })
+        data = req.json()
+
+        # test чтобы не тратить количество бесплатных запросов
+        # data = {'success': True, 'timestamp': 1673459163, 'base': 'USD', 'date': '2023-01-11', 'rates': {'LKR': 366.689473}}
+        # Надо бы обрабатывать, если нет такой валюты в АПИ, но я оставлю это на потом
+        code_rate = data["rates"].get(code, 0)
+        code_home_rate = data["rates"].get(code_home, 0)
+
+        return JsonResponse({
+            "base": "USD",
+            "code": code,
+            "code_home": code_home,
+            "rates": {
+                code: code_rate,
+                code_home: code_home_rate,
+            },
+            "national_currency": national_currency
+        })
+    else:
+        return HttpResponseRedirect(reverse("index"))
+
+
+def get_currency_code(country):
+    try:
+        location = CurrencyCode.objects.get(location=country)
+        code = location.code
+        currency = location.currency
+    except CurrencyCode.DoesNotExist:
+        code = "USD"
+        currency = "not found!"
+
+    return {"code": code, "currency": currency}

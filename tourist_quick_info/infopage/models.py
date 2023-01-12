@@ -39,3 +39,12 @@ class Location(models.Model):
 
     def __str__(self):
         return f"{self.id}: {self.user.username} {self.country.name} {self.city.name} {self.is_home} {self.show_hide} {self.order}"
+
+
+class CurrencyCode(models.Model):
+    code = models.CharField(max_length=3);
+    currency = models.CharField(max_length=64)
+    location = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f"{self.id}: {self.code} {self.currency} {self.location}"

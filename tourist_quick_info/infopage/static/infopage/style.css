@@ -49,10 +49,18 @@ a[data-bs-target="#addLocation"] {
     margin-top: 8px;
 }
 
-.refresh-weather {
+.refresh-btn {
     font-size: xx-small;
     border: 0;
     border-radius: 2px;
     color: grey;
     text-align: right;
+}
+
+.Rates {
+    font-size: small;
+}
+
+.current-currency {
+    margin-top: 8px;
 }
