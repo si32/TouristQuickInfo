@@ -72,7 +72,6 @@ function update_currency(current_currency_div) {
             `;
             current_currency_div.appendChild(currency_div);
         }
-
     })
 
 }

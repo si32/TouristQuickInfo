@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from .models import User, Country, City, Location, CurrencyCode
 from django.views.decorators.csrf import csrf_exempt
+from .forms import Price
 
 
 # Tokens in .env file
@@ -75,8 +76,11 @@ def index(request):
         user = User.objects.get(username=request.user)
         locations = user.user_locations.all().filter(show_hide=True).order_by("order")
 
+        form = Price()
+
         return render(request, "infopage/index.html", {
             "locations": locations,
+            "form": form
         })
     else:
         return render(request, "infopage/login.html")
@@ -279,15 +283,15 @@ def currency(request):
             code_home = False
 
         # api
-        req = requests.get("https://api.apilayer.com/exchangerates_data/latest", {
-            "apikey": env("EXCHANGE_RATE_KEY"),
-            "base": "USD",
-            "symbols": f"{code},{code_home}"
-        })
-        data = req.json()
+        # req = requests.get("https://api.apilayer.com/exchangerates_data/latest", {
+        #     "apikey": env("EXCHANGE_RATE_KEY"),
+        #     "base": "USD",
+        #     "symbols": f"{code},{code_home}"
+        # })
+        # data = req.json()
 
         # test чтобы не тратить количество бесплатных запросов
-        # data = {'success': True, 'timestamp': 1673459163, 'base': 'USD', 'date': '2023-01-11', 'rates': {'LKR': 366.689473}}
+        data = {'success': True, 'timestamp': 1673459163, 'base': 'USD', 'date': '2023-01-11', 'rates': {'LKR': 366.689473, "RUB": 69.249834}}
         # Надо бы обрабатывать, если нет такой валюты в АПИ, но я оставлю это на потом
         code_rate = data["rates"].get(code, 0)
         code_home_rate = data["rates"].get(code_home, 0)
@@ -316,3 +320,10 @@ def get_currency_code(country):
         currency = "not found!"
 
     return {"code": code, "currency": currency}
+
+
+def add_feedback(request):
+    if request.method == "POST":
+        pass
+    else:
+        return HttpResponseRedirect(reverse("index"))

@@ -37,8 +37,12 @@ class Location(models.Model):
     is_home = models.BooleanField()
     show_hide = models.BooleanField()
 
+    @property
+    def currency_code(self):
+        return CurrencyCode.objects.get(location=self.country.name).code
+
     def __str__(self):
-        return f"{self.id}: {self.user.username} {self.country.name} {self.city.name} {self.is_home} {self.show_hide} {self.order}"
+        return f"{self.id}: {self.user.username} {self.country.name} {self.city.name} {self.is_home} {self.show_hide} {self.order} {self.currency_code}"
 
 
 class CurrencyCode(models.Model):
@@ -48,3 +52,24 @@ class CurrencyCode(models.Model):
 
     def __str__(self):
         return f"{self.id}: {self.code} {self.currency} {self.location}"
+
+
+class TaxiPrice(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_taxi_prices")
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="user_taxi_cities")
+    currency_code = models.ForeignKey(CurrencyCode, on_delete=models.CASCADE)
+
+
+    def __str__(self):
+        return f"{self.id}: {self.user.username} {self.price} {self.city.name} {self.currency_code.code}"
+
+
+class ReataurantPrice(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_restaurant_prices")
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="user_restaurant_cities")
+    currency_code = models.ForeignKey(CurrencyCode, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.id}: {self.user.username} {self.price} {self.city.name} {self.currency_code.code}"

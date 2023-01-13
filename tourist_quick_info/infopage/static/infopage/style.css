@@ -64,3 +64,16 @@ a[data-bs-target="#addLocation"] {
 .current-currency {
     margin-top: 8px;
 }
+
+.price {
+    margin-top: 8px;
+    border: 0;
+    border-bottom: 1px;
+    border-color: blueviolet;
+    border-style: groove;
+}
+
+.WidthSpan {
+    width: 200px;
+    display: inline-block;
+}
