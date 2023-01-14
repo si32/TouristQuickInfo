@@ -8,11 +8,14 @@ from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.db.models import Avg, Count
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from .models import User, Country, City, Location, CurrencyCode
+from .models import User, Country, City, Location, CurrencyCode, TaxiPrice, RestaurantPrice
 from django.views.decorators.csrf import csrf_exempt
 from .forms import Price
+
+from decimal import Decimal
 
 
 # Tokens in .env file
@@ -204,7 +207,6 @@ def update_locations(request):
             try:
                 Location.objects.get(user=user, order=order, country=country, city=city, is_home=is_home, show_hide=show_hide)
             except Location.DoesNotExist:
-                print("start update")
                 loc = Location.objects.get(user=user, country=country, city=city)
                 loc.order = order
                 loc.is_home = is_home
@@ -283,15 +285,15 @@ def currency(request):
             code_home = False
 
         # api
-        # req = requests.get("https://api.apilayer.com/exchangerates_data/latest", {
-        #     "apikey": env("EXCHANGE_RATE_KEY"),
-        #     "base": "USD",
-        #     "symbols": f"{code},{code_home}"
-        # })
-        # data = req.json()
+        req = requests.get("https://api.apilayer.com/exchangerates_data/latest", {
+            "apikey": env("EXCHANGE_RATE_KEY"),
+            "base": "USD",
+            "symbols": f"{code},{code_home}"
+        })
+        data = req.json()
 
         # test чтобы не тратить количество бесплатных запросов
-        data = {'success': True, 'timestamp': 1673459163, 'base': 'USD', 'date': '2023-01-11', 'rates': {'LKR': 366.689473, "RUB": 69.249834}}
+        # data = {'success': True, 'timestamp': 1673459163, 'base': 'USD', 'date': '2023-01-11', 'rates': {'LKR': 366.689473, "RUB": 69.249834}}
         # Надо бы обрабатывать, если нет такой валюты в АПИ, но я оставлю это на потом
         code_rate = data["rates"].get(code, 0)
         code_home_rate = data["rates"].get(code_home, 0)
@@ -324,6 +326,53 @@ def get_currency_code(country):
 
 def add_feedback(request):
     if request.method == "POST":
-        pass
+        city = City.objects.get(id=request.POST["city_id"])
+        currency = CurrencyCode.objects.get(code=request.POST["currency_code"])
+        new_feeedback = Price(request.POST)
+        if new_feeedback.is_valid():
+            new_taxi_price = new_feeedback.cleaned_data["taxi_price"]
+            new_restaurant_price = new_feeedback.cleaned_data["restaurant_price"]
+
+            if new_taxi_price != None:
+                try:
+                    user_taxi_feedback = TaxiPrice.objects.get(user=request.user, city=city, currency_code=currency)
+                    user_taxi_feedback.price = new_taxi_price
+                    user_taxi_feedback.save()
+                except TaxiPrice.DoesNotExist:
+                    TaxiPrice.objects.create(user=request.user, price=Decimal(new_taxi_price), city=city, currency_code=currency)
+
+            if new_restaurant_price != None:
+                try:
+                    user_restaurant_feedback = RestaurantPrice.objects.get(user=request.user, city=city, currency_code=currency)
+                    user_restaurant_feedback.price = new_restaurant_price
+                    user_restaurant_feedback.save()
+                except RestaurantPrice.DoesNotExist:
+                    RestaurantPrice.objects.create(user=request.user, price=Decimal(new_restaurant_price), city=city, currency_code=currency)
+
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return HttpResponseRedirect(reverse("index"))
+
+
+def get_feedback(request):
+    if request.method == "POST":
+        user = request.user
+        city_id = json.loads(request.body).get("city_id")
+        city = City.objects.get(id=city_id)
+
+        taxi_prices = TaxiPrice.objects.filter(city=city)
+        taxi_pice_avg = taxi_prices.aggregate(Avg('price'))["price__avg"]
+        taxi_price_quantity_feedback = taxi_prices.aggregate(Count('price'))["price__count"]
+
+        restaurant_prices = RestaurantPrice.objects.filter(city=city)
+        restaurant_price_avg = restaurant_prices.aggregate(Avg('price'))["price__avg"]
+        restaurant_price_quantity_feedback = restaurant_prices.aggregate(Count('price'))["price__count"]
+
+        return JsonResponse({
+            "taxi_price_avg": taxi_pice_avg,
+            "taxi_price_quantity_feedback": taxi_price_quantity_feedback,
+            "restaurant_price_avg": restaurant_price_avg,
+            "restaurant_price_quantity_feedback": restaurant_price_quantity_feedback
+        })
     else:
         return HttpResponseRedirect(reverse("index"))

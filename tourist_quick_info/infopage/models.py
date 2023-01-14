@@ -41,6 +41,23 @@ class Location(models.Model):
     def currency_code(self):
         return CurrencyCode.objects.get(location=self.country.name).code
 
+    @property
+    def taxi_feedback(self):
+        try:
+            TaxiPrice.objects.get(user=self.user, city=self.city)
+            return True
+        except TaxiPrice.DoesNotExist:
+            return False
+
+    @property
+    def restaurant_feedback(self):
+        try:
+            RestaurantPrice.objects.get(user=self.user, city=self.city)
+            return True
+        except RestaurantPrice.DoesNotExist:
+            return False
+
+
     def __str__(self):
         return f"{self.id}: {self.user.username} {self.country.name} {self.city.name} {self.is_home} {self.show_hide} {self.order} {self.currency_code}"
 
@@ -56,7 +73,7 @@ class CurrencyCode(models.Model):
 
 class TaxiPrice(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_taxi_prices")
-    price = models.DecimalField(max_digits=5, decimal_places=2)
+    price = models.DecimalField(max_digits=7, decimal_places=2)
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="user_taxi_cities")
     currency_code = models.ForeignKey(CurrencyCode, on_delete=models.CASCADE)
 
@@ -65,9 +82,9 @@ class TaxiPrice(models.Model):
         return f"{self.id}: {self.user.username} {self.price} {self.city.name} {self.currency_code.code}"
 
 
-class ReataurantPrice(models.Model):
+class RestaurantPrice(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_restaurant_prices")
-    price = models.DecimalField(max_digits=5, decimal_places=2)
+    price = models.DecimalField(max_digits=7, decimal_places=2)
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="user_restaurant_cities")
     currency_code = models.ForeignKey(CurrencyCode, on_delete=models.CASCADE)
 

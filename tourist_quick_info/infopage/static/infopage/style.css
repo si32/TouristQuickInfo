@@ -67,6 +67,7 @@ a[data-bs-target="#addLocation"] {
 
 .price {
     margin-top: 8px;
+    margin-bottom: 8px;
     border: 0;
     border-bottom: 1px;
     border-color: blueviolet;
@@ -76,4 +77,9 @@ a[data-bs-target="#addLocation"] {
 .WidthSpan {
     width: 200px;
     display: inline-block;
+}
+
+#thanks {
+    color: blueviolet;
+    font-size: x-small;
 }

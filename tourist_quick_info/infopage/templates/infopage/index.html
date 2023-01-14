@@ -30,10 +30,15 @@
 								<button class="refresh-btn" onclick="refresh_currency(event)">Refresh</button>
 							</div>
 							<!-- Average restaurant and taxi price -->
-							<div class="price" data-currency_code="">
-								<div class="taxi-price">Taxi price: 500 {{ location.currency_code}} <small>(5 replies)</small></div>
-								<div class="restaurant-price">Restaurant price: 2000 {{ location.currency_code}} <small>(5 replies)</small></div>
-								<button class="refresh-btn" data-bs-toggle="modal" data-bs-target="#addFeedback_{{location.id}}">leave feedback</button>
+							<div class="price" data-city_id="{{ location.city.id }}">
+								<div class="taxi-price">{{ location.currency_code}}</div>
+								<div class="restaurant-price">{{ location.currency_code}}</div>
+								{% if location.taxi_feedback or location.restaurant_feedback %}
+									<button class="refresh-btn" data-bs-toggle="modal" data-bs-target="#addFeedback_{{location.id}}">Change feedback</button>
+									<span id="thanks">Thank you for your feedback!</span>
+								{% else %}
+									<button class="refresh-btn" data-bs-toggle="modal" data-bs-target="#addFeedback_{{location.id}}">leave feedback</button>
+								{% endif %}
 							</div>
 							<!-- Modal window-->
 							<div class="modal fade" id="addFeedback_{{location.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -43,7 +48,7 @@
 											<h5 class="modal-title" id="exampleModalLabel">Average taxi and restaurant prices</h5>
 											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 										</div>
-										<form  method="post">
+										<form action="{% url 'add_feedback' %}" method="post">
 											{% csrf_token %}
 											<div class="modal-body">
 												<div class="mb-2">
@@ -52,6 +57,9 @@
 												<div class="mb-2">
 													<span class="WidthSpan">Average restaurant price: </span>{{ form.restaurant_price }} {{location.currency_code}}
 												</div>
+
+												<input name="city_id" value="{{ location.city.id }}" hidden type="text">
+												<input name="currency_code" value="{{ location.currency_code }}" hidden type="text">
 											</div>
 											<div class="modal-footer">
 												<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -68,9 +76,6 @@
 					{% endfor %}
 				</div>
 
-
-
-
 			</div>
 
 		</div>
@@ -81,4 +86,5 @@
 		<script src="{% static 'infopage/js/timer.js' %}"></script>
 		<script src="{% static 'infopage/js/weather.js' %}"></script>
 		<script src="{% static 'infopage/js/currency.js' %}"></script>
+		<script src="{% static 'infopage/js/prices.js' %}"></script>
 {% endblock %}
