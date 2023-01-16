@@ -168,7 +168,7 @@ function input_home_checkbox() {
                 <input id="is_home_checkbox" type="checkbox" name="is_home" disabled>
                 <label  for="is_home_checkbox" style="color: grey;">Home*</label>
                 <div class="explain-message">
-                    * You have already have home location. You can reset your home location after adding a new location in your ptofile.
+                    * You have already have home location. You can reset your home location after adding a new location in your profile.
                 </div>
             `
         } else {
